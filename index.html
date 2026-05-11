@@ -749,9 +749,9 @@ function chkMC(chosen,correct,el){
     spk(mcW[mcI].en);
   } else {
     el.classList.add('wrong','disabled');lH('mcH',mcA-1);
+    if(mcA===1)recA(false,mcW[mcI].en,mcW[mcI].topic);
     if(mcA>=3){
       document.querySelectorAll('#mcO .qopt').forEach(b=>{b.classList.add('disabled');if(b.textContent===correct)b.classList.add('correct');});
-      recA(false,mcW[mcI].en,mcW[mcI].topic);
       fb('mcFb','err','❌ התשובה: '+correct);
       document.getElementById('mcNB').style.display='inline-flex';
     } else fb('mcFb','hint','🤔 '+(mcA>=2?'רמז: מתחיל ב"'+heFL(correct)+'"':'חשבי טוב!'));
@@ -778,7 +778,8 @@ function chkTyp(){
     fb('typFb','ok',['✨ מושלם!','🌟 בדיוק!','🎉 נכון!'][Math.floor(Math.random()*3)]+' '+w.en);
     document.getElementById('typNB').style.display='inline-flex';document.getElementById('typHB').style.display='none';spk(w.en);
   } else {
-    document.getElementById('typI').className='tinput err';recA(false,w.en,w.topic);
+    document.getElementById('typI').className='tinput err';
+    if(typA===1)recA(false,w.en,w.topic);
     if(typA>=3){fb('typFb','err','❌ התשובה: '+w.en);document.getElementById('typNB').style.display='inline-flex';}
     else{fb('typFb','hint','🤔 רמז: '+(typA===1?'"'+w.en[0].toUpperCase()+'"':w.en.slice(0,Math.ceil(w.en.length/2))+'...'));document.getElementById('typI').select();}
   }
@@ -802,7 +803,8 @@ function chkLis(){
     document.getElementById('lisNB').style.display='inline-flex';document.getElementById('lisHB').style.display='none';
   } else {
     document.getElementById('lisI').className='tinput err';
-    if(lisA>=3){recA(false,w.en,w.topic);fb('lisFb','err','❌ המילה: '+w.en+' ('+w.he+')');document.getElementById('lisNB').style.display='inline-flex';}
+    if(lisA===1)recA(false,w.en,w.topic);
+    if(lisA>=3){fb('lisFb','err','❌ המילה: '+w.en+' ('+w.he+')');document.getElementById('lisNB').style.display='inline-flex';}
     else{fb('lisFb','hint','👂 '+(lisA>=2?'בעברית: '+w.he:'האות הראשונה: "'+heFL(w.he)+'"'));spk(w.en);}
   }
 }
@@ -834,7 +836,8 @@ function chkVQ(){
     document.getElementById('vqNB').style.display='inline-flex';document.getElementById('vqHB').style.display='none';spk(correct);
   } else {
     document.getElementById('vqI').className='tinput err';lH('vqH',vqA-1);
-    if(vqA>=3){recA(false,v.v1,null);fb('vqFb','err','❌ התשובה: '+correct+(v.ir?' (לא-סדיר!)':''));document.getElementById('vqNB').style.display='inline-flex';}
+    if(vqA===1)recA(false,v.v1,null);
+    if(vqA>=3){fb('vqFb','err','❌ התשובה: '+correct+(v.ir?' (לא-סדיר!)':''));document.getElementById('vqNB').style.display='inline-flex';}
     else{fb('vqFb','hint','💡 מתחיל ב: '+correct.slice(0,2)+'...');document.getElementById('vqI').select();}
   }
 }
@@ -866,7 +869,8 @@ function chkGQ(chosen,correct,el){
     spk(gqQ[gqI].s.replace('___',correct));
   } else {
     el.classList.add('wrong','disabled');lH('gqH',gqA-1);
-    if(gqA>=3){document.querySelectorAll('#gqO .qopt').forEach(b=>{b.classList.add('disabled');if(b.textContent===correct)b.classList.add('correct');});document.getElementById('gqBl').textContent=correct;recA(false,'gram:'+gqQ[gqI].s.slice(0,20),null);fb('gqFb','err','❌ התשובה: '+correct);document.getElementById('gqNB').style.display='inline-flex';}
+    if(gqA===1)recA(false,'gram:'+gqQ[gqI].s.slice(0,20),null);
+    if(gqA>=3){document.querySelectorAll('#gqO .qopt').forEach(b=>{b.classList.add('disabled');if(b.textContent===correct)b.classList.add('correct');});document.getElementById('gqBl').textContent=correct;fb('gqFb','err','❌ התשובה: '+correct);document.getElementById('gqNB').style.display='inline-flex';}
     else fb('gqFb','hint','💡 '+gqQ[gqI].h);
   }
 }
@@ -913,7 +917,8 @@ function chkFQO(chosen,correct,el){
     if(q.type!=='gram')spk(q.q);
   } else {
     el.classList.add('wrong','disabled');lH('fqH',fqA-1);
-    if(fqA>=3){document.querySelectorAll('#fqO .qopt').forEach(b=>{b.classList.add('disabled');if(b.textContent===correct)b.classList.add('correct');});if(document.getElementById('fqBl'))document.getElementById('fqBl').textContent=correct;recA(false,wordKey,topicKey);fb('fqFb','err','❌ '+correct);document.getElementById('fqNB').style.display='inline-flex';}
+    if(fqA===1)recA(false,wordKey,topicKey);
+    if(fqA>=3){document.querySelectorAll('#fqO .qopt').forEach(b=>{b.classList.add('disabled');if(b.textContent===correct)b.classList.add('correct');});if(document.getElementById('fqBl'))document.getElementById('fqBl').textContent=correct;fb('fqFb','err','❌ '+correct);document.getElementById('fqNB').style.display='inline-flex';}
     else fb('fqFb','hint','💡 '+q.h);
   }
 }
