@@ -328,7 +328,10 @@ button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; c
   <div class="scroll">
     <div class="prog-row"><span class="prog-lbl" id="mcP">1/?</span><div class="dots" id="mcD"></div></div>
     <div class="hearts" id="mcH"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div>
-    <div class="quiz-q" id="mcQ">---</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px">
+      <div class="quiz-q" id="mcQ" style="margin:0">---</div>
+      <button onclick="spk(mcW[mcI]?.en)" style="background:rgba(77,150,255,.15);border:1px solid rgba(77,150,255,.3);border-radius:50%;width:36px;height:36px;font-size:1.1rem;flex-shrink:0;display:flex;align-items:center;justify-content:center" title="השמיעי">🔊</button>
+    </div>
     <div class="quiz-sub">מה התרגום לעברית?</div>
     <div class="quiz-opts" id="mcO"></div>
     <div class="fb" id="mcFb"></div>
@@ -1098,12 +1101,13 @@ function resetFQ(){document.getElementById('qzMenu').style.display='block';docum
 // ── HINTS ──
 function hint(ctx){
   ({
-    mc:()=>fb('mcFb','hint','💡 התרגום מתחיל ב"'+heFL(mcW[mcI].he)+'"'),
+    mc: ()=>fb('mcFb','hint','💡 התרגום מתחיל ב"'+heFL(mcW[mcI].he)+'"'),
     typ:()=>fb('typFb','hint','💡 מתחיל ב"'+typW[typI].en[0].toUpperCase()+'" — בעברית: '+typW[typI].he),
     lis:()=>{spk(lisW[lisI].en);fb('lisFb','hint','👂 שמעי שוב! בעברית: "'+heFL(lisW[lisI].he)+'"');},
-    vq:()=>{const v=vqV[vqI];const m=vqM==='mix'?['v1tov2','v2tov1','heb'][vqI%3]:vqM;const c=m==='v1tov2'?v.v2:v.v1;fb('vqFb','hint','💡 '+c.slice(0,2)+'... ('+v.he+')');},
-    gq:()=>fb('gqFb','hint','💡 '+gqQ[gqI].h),
-    fq:()=>fb('fqFb','hint','💡 '+fqQ[fqI].h),
+    vq: ()=>{const v=vqV[vqI];const m=vqM==='mix'?['v1tov2','v2tov1','heb'][vqI%3]:vqM;const c=m==='v1tov2'?v.v2:v.v1;fb('vqFb','hint','💡 '+c.slice(0,2)+'... ('+v.he+')');},
+    gq: ()=>fb('gqFb','hint','💡 '+gqQ[gqI].h),
+    fq: ()=>fb('fqFb','hint','💡 '+fqQ[fqI].h),
+    smc:()=>fb('smcFb','hint','💡 '+(smcWords[smcI]?.hint||'')),
   })[ctx]?.();
 }
 
@@ -1568,13 +1572,6 @@ async function askLessonQ(){
   } catch(e){
     ansEl.innerHTML = '<span style="color:var(--accent1)">שגיאה — נסי שוב</span>';
   }
-}
-
-// extend hint() for school modes
-const _origHint = hint;
-function hint(ctx){
-  if(ctx==='smc') fb('smcFb','hint','💡 '+smcWords[smcI]?.hint);
-  else _origHint(ctx);
 }
 
 // ── INIT ──
