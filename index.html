@@ -199,6 +199,31 @@ button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; c
 @keyframes spop { 0%{transform:scale(1)} 50%{transform:scale(1.35)} 100%{transform:scale(1)} }
 .spop { animation: spop .4s cubic-bezier(.34,1.56,.64,1); }
 .tap-hint { text-align: center; color: var(--text2); font-size: 0.76rem; margin-bottom: 7px; }
+.review-section { margin-bottom: 14px; }
+.review-head { font-weight: 800; font-size: 0.85rem; color: var(--accent2); margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.review-list { margin-bottom: 8px; }
+.review-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.review-row:last-child { border-bottom: none; }
+.rev-btn { background: rgba(77,150,255,.15); border: 1px solid rgba(77,150,255,.3); border-radius: 50px; color: var(--accent4); padding: 4px 12px; font-weight: 800; font-size: 0.75rem; white-space: nowrap; }
+.rev-btn:active { transform: scale(.95); }
+.rev-all-btn { width: 100%; background: linear-gradient(135deg,var(--accent4),var(--accent5)); color: #fff; border-radius: 50px; padding: 10px; font-weight: 800; font-size: 0.84rem; margin-top: 4px; }
+.rev-all-btn:active { transform: scale(.97); }
+
+/* ── SCHOOL UPLOAD ── */
+.upload-area { display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--surface2); border: 2px dashed rgba(107,203,119,.4); border-radius: 14px; padding: 28px 16px; cursor: pointer; transition: all .2s; }
+.upload-area:active { border-color: var(--accent3); background: rgba(107,203,119,.08); }
+.upload-icon { font-size: 2.5rem; }
+.upload-text { font-weight: 800; font-size: 0.95rem; color: var(--accent3); }
+.upload-sub { color: var(--text2); font-size: 0.75rem; }
+.processing-spinner { width: 48px; height: 48px; border: 4px solid var(--surface2); border-top-color: var(--accent4); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.material-card { background: var(--surface2); border-radius: 12px; padding: 13px 14px; margin-bottom: 9px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,.07); cursor: pointer; transition: all .15s; }
+.material-card:active { transform: scale(.97); }
+.material-icon { font-size: 1.8rem; flex-shrink: 0; }
+.material-info { flex: 1; min-width: 0; }
+.material-name { font-weight: 800; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.material-meta { color: var(--text2); font-size: 0.72rem; margin-top: 2px; }
+.material-del { background: rgba(255,107,107,.15); border: 1px solid rgba(255,107,107,.3); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; color: var(--accent1); }
 .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 9998; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
 .modal-bg.open { display: flex; animation: mfade .2s; }
 @keyframes mfade { from{opacity:0} to{opacity:1} }
@@ -245,6 +270,7 @@ button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; c
     <div class="hcard c3" onclick="go('screen-grammar')"><span class="hi">📝</span><span class="hn">דקדוק</span><span class="hd">3 זמנים</span></div>
     <div class="hcard c4" onclick="go('screen-stats')"><span class="hi">📊</span><span class="hn">התקדמות</span><span class="hd">סטטיסטיקות</span></div>
     <div class="hcard c5 full" onclick="go('screen-quiz')"><span class="hi">🎯</span><span class="hn" style="font-size:1.1rem">חידון מבחן מלא</span></div>
+    <div class="hcard full" style="border-color:rgba(107,203,119,.45);background:linear-gradient(135deg,rgba(107,203,119,.08),rgba(77,150,255,.08))" onclick="go('screen-school')"><span class="hi">🏫</span><span class="hn" style="font-size:1.1rem">חומר מבית הספר</span><span class="hd">העלי דף וקבלי שיעור מותאם</span></div>
   </div>
 </div>
 
@@ -491,7 +517,139 @@ button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; c
     <div class="card" id="sXP"></div>
     <div class="card"><div class="ctitle">📚 לפי נושא</div><div id="sBars"></div></div>
     <div class="card"><div class="ctitle">🏆 היסטוריה</div><div id="sHist"></div></div>
-    <div class="card"><div class="ctitle">⚠️ מילים לחזרה</div><div id="sWeak"></div></div>
+    <div class="card" id="sReview"></div>
+  </div>
+</div>
+
+<!-- ════ SCHOOL UPLOAD SCREEN ════ -->
+<div class="screen" id="screen-school">
+  <div class="topbar">
+    <button class="back-btn" onclick="back()">◀ בית</button>
+    <span class="topbar-title">🏫 חומר מבית הספר</span>
+    <div class="topbar-r"></div>
+  </div>
+  <div class="scroll">
+
+    <!-- uploaded materials list -->
+    <div id="schoolMaterialsList"></div>
+
+    <!-- upload card -->
+    <div class="card" id="schoolUploadCard">
+      <div class="ctitle">📤 העלי חומר חדש</div>
+      <p style="color:var(--text2);font-size:0.82rem;margin-bottom:14px;line-height:1.5">
+        העלי תמונה או PDF של דף לימוד מבית הספר — Claude יקרא אותו ויבנה לך שיעור מותאם עם כרטיסיות, שאלות וחידון!
+      </p>
+      <label class="upload-area" id="uploadArea">
+        <input type="file" id="schoolFileInput" accept="image/*,application/pdf" style="display:none" onchange="handleSchoolFile(event)">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">לחצי לבחירת קובץ</div>
+        <div class="upload-sub">תמונה (JPG/PNG) או PDF</div>
+      </label>
+    </div>
+
+    <!-- processing state -->
+    <div id="schoolProcessing" style="display:none">
+      <div class="card" style="text-align:center;padding:28px 16px">
+        <div class="processing-spinner"></div>
+        <div class="ctitle" style="text-align:center;margin-top:14px" id="processingTitle">מנתח את הדף...</div>
+        <p id="processingMsg" style="color:var(--text2);font-size:0.82rem;margin-top:6px">Claude קורא את החומר ובונה שיעור מותאם 🤖</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════ SCHOOL LESSON SCREEN ════ -->
+<div class="screen" id="screen-school-lesson">
+  <div class="topbar">
+    <button class="back-btn" onclick="back()">◀ חזרה</button>
+    <span class="topbar-title" id="lessonTitle">שיעור</span>
+    <div class="topbar-r"></div>
+  </div>
+  <div class="scroll">
+    <div id="lessonSummaryCard" class="card" style="display:none">
+      <div class="ctitle">📖 סיכום החומר</div>
+      <div id="lessonSummary" style="font-size:0.85rem;line-height:1.7;color:var(--text2)"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">בחרי מצב לימוד</div>
+      <div class="mode-grid">
+        <div class="mcard" onclick="startSchoolMode('fc')"><span class="mi">🃏</span><div class="mn">כרטיסיות</div><div class="md">לפי קצב שלך</div></div>
+        <div class="mcard" onclick="startSchoolMode('mc')"><span class="mi">🎯</span><div class="mn">בחירה מרובה</div><div class="md">4 אפשרויות</div></div>
+        <div class="mcard" onclick="startSchoolMode('typ')"><span class="mi">⌨️</span><div class="mn">כתיבה</div><div class="md">כתבי את התשובה</div></div>
+        <div class="mcard" onclick="startSchoolMode('quiz')"><span class="mi">🏆</span><div class="mn">חידון מלא</div><div class="md">כל השאלות</div></div>
+      </div>
+    </div>
+    <div class="card" id="lessonQACard" style="display:none">
+      <div class="ctitle">❓ שאל את Claude</div>
+      <p style="color:var(--text2);font-size:0.8rem;margin-bottom:10px">יש לך שאלה על החומר? Claude ישיב בעברית!</p>
+      <div style="display:flex;gap:8px">
+        <input id="lessonQInput" class="tinput" style="margin:0;flex:1;text-align:right;direction:rtl" placeholder="מה זה אומר..." dir="rtl">
+        <button class="btn btn-p" style="padding:10px 16px;white-space:nowrap" onclick="askLessonQ()">שאלי</button>
+      </div>
+      <div id="lessonQAnswer" style="display:none;background:var(--surface2);border-radius:10px;padding:12px;margin-top:10px;font-size:0.83rem;line-height:1.6;direction:rtl"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SCHOOL MC SCREEN ════ -->
+<div class="screen" id="screen-school-mc">
+  <div class="topbar">
+    <button class="back-btn" onclick="back()">◀ חזרה</button>
+    <span class="topbar-title">🎯 שאלות</span>
+    <div class="topbar-r"></div>
+  </div>
+  <div class="scroll">
+    <div class="prog-row"><span class="prog-lbl" id="smcP">1/?</span><div class="dots" id="smcD"></div></div>
+    <div class="hearts" id="smcH"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div>
+    <div class="quiz-q" id="smcQ" style="font-size:1.3rem;direction:rtl;color:var(--accent2)">---</div>
+    <div class="quiz-opts" id="smcO"></div>
+    <div class="fb" id="smcFb"></div>
+    <button class="hint-btn" id="smcHB" onclick="hint('smc')">💡 רמז</button>
+    <div class="brow"><button class="btn btn-p" id="smcNB" style="display:none" onclick="smcNxt()">הבא ▶</button></div>
+  </div>
+</div>
+
+<!-- ════ SCHOOL TYPING SCREEN ════ -->
+<div class="screen" id="screen-school-typ">
+  <div class="topbar">
+    <button class="back-btn" onclick="back()">◀ חזרה</button>
+    <span class="topbar-title">⌨️ כתיבה</span>
+    <div class="topbar-r"></div>
+  </div>
+  <div class="scroll">
+    <div class="prog-row"><span class="prog-lbl" id="stypP">1/?</span><div class="dots" id="stypD"></div></div>
+    <div class="quiz-q" id="stypQ" style="font-size:1.2rem;direction:rtl;color:var(--accent2);margin-bottom:12px">---</div>
+    <input class="tinput" id="stypI" type="text" placeholder="כתבי תשובה..." dir="rtl" style="text-align:right" autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')chkSTyp()">
+    <div class="fb" id="stypFb"></div>
+    <div class="brow">
+      <button class="btn btn-p" onclick="chkSTyp()">✅ בדקי</button>
+      <button class="btn btn-s" id="stypNB" style="display:none" onclick="stypNxt()">הבא ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SCHOOL QUIZ SCREEN ════ -->
+<div class="screen" id="screen-school-quiz">
+  <div class="topbar">
+    <button class="back-btn" onclick="back()">◀ חזרה</button>
+    <span class="topbar-title">🏆 חידון</span>
+    <div class="topbar-r"></div>
+  </div>
+  <div class="scroll">
+    <div class="prog-row"><span class="prog-lbl" id="sqP">1/?</span><div class="dots" id="sqD"></div></div>
+    <div class="hearts" id="sqH"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div>
+    <div id="sqOut"></div>
+    <div class="fb" id="sqFb"></div>
+    <div class="brow">
+      <button class="btn btn-p" id="sqCB" onclick="chkSQ()">✅ בדקי</button>
+      <button class="btn btn-p" id="sqNB" style="display:none" onclick="sqNxt()">הבא ▶</button>
+    </div>
+    <div id="sqResult" style="display:none;text-align:center;padding:20px 0">
+      <div class="sring"><div class="snum" id="sqResNum">--</div><div class="slbl">נקודות</div></div>
+      <div class="ctitle" id="sqResTitle" style="text-align:center;margin-bottom:6px"></div>
+      <div class="brow"><button class="btn btn-p" onclick="startSchoolMode('quiz')">🔄 שוב</button><button class="btn btn-s" onclick="back()">◀ חזרה</button></div>
+    </div>
   </div>
 </div>
 
@@ -627,18 +785,18 @@ const GD={
     note:"⚠️ סדירים: +ed | לא-סדירים: צורת V2"}
 };
 const GQ=[
-  {s:"She ___ (go) to school every day.",o:["goes","went","will go","go"],a:"goes",h:"Present Simple + she = הוסיפי s"},
-  {s:"Yesterday I ___ (eat) pizza for lunch.",o:["eat","eats","ate","will eat"],a:"ate",h:"עבר לא סדיר: eat → ate"},
-  {s:"Tomorrow they ___ (travel) to Paris.",o:["travel","traveled","travels","will travel"],a:"will travel",h:"Future: will + V1"},
-  {s:"He ___ (not/like) vegetables at all.",o:["doesn't like","don't like","didn't like","won't like"],a:"doesn't like",h:"Present שלילה + he = doesn't"},
-  {s:"___ you ___ (see) the film last night?",o:["Did / see","Do / see","Will / see","Does / see"],a:"Did / see",h:"Past שאלה: Did + V1"},
-  {s:"I ___ (not/come) to the party tomorrow.",o:["won't come","don't come","didn't come","doesn't come"],a:"won't come",h:"Future שלילה: won't + V1"},
-  {s:"They ___ (play) football every Saturday.",o:["play","played","will play","plays"],a:"play",h:"Present Simple + they = ללא שינוי"},
-  {s:"She ___ (win) the race last year.",o:["won","wins","will win","win"],a:"won",h:"עבר לא סדיר: win → won"},
-  {s:"___ she ___ (speak) French?",o:["Does / speak","Do / speak","Did / speak","Will / speak"],a:"Does / speak",h:"Present שאלה + she = Does"},
-  {s:"I think he ___ (become) a champion.",o:["will become","becomes","became","become"],a:"will become",h:"עתיד: will + V1"},
-  {s:"We ___ (not/go) to the museum yesterday.",o:["didn't go","don't go","won't go","doesn't go"],a:"didn't go",h:"Past שלילה: didn't + V1"},
-  {s:"___ they ___ (arrive) on time tomorrow?",o:["Will / arrive","Do / arrive","Did / arrive","Does / arrive"],a:"Will / arrive",h:"Future שאלה: Will + נושא + V1"},
+  {s:"She ___ (go) to school every day.",o:["goes","went","will go","go"],a:"goes",h:"Present Simple + she = הוסיפי s",tense:"present"},
+  {s:"Yesterday I ___ (eat) pizza for lunch.",o:["eat","eats","ate","will eat"],a:"ate",h:"עבר לא סדיר: eat → ate",tense:"past"},
+  {s:"Tomorrow they ___ (travel) to Paris.",o:["travel","traveled","travels","will travel"],a:"will travel",h:"Future: will + V1",tense:"future"},
+  {s:"He ___ (not/like) vegetables at all.",o:["doesn't like","don't like","didn't like","won't like"],a:"doesn't like",h:"Present שלילה + he = doesn't",tense:"present"},
+  {s:"___ you ___ (see) the film last night?",o:["Did / see","Do / see","Will / see","Does / see"],a:"Did / see",h:"Past שאלה: Did + V1",tense:"past"},
+  {s:"I ___ (not/come) to the party tomorrow.",o:["won't come","don't come","didn't come","doesn't come"],a:"won't come",h:"Future שלילה: won't + V1",tense:"future"},
+  {s:"They ___ (play) football every Saturday.",o:["play","played","will play","plays"],a:"play",h:"Present Simple + they = ללא שינוי",tense:"present"},
+  {s:"She ___ (win) the race last year.",o:["won","wins","will win","win"],a:"won",h:"עבר לא סדיר: win → won",tense:"past"},
+  {s:"___ she ___ (speak) French?",o:["Does / speak","Do / speak","Did / speak","Will / speak"],a:"Does / speak",h:"Present שאלה + she = Does",tense:"present"},
+  {s:"I think he ___ (become) a champion.",o:["will become","becomes","became","become"],a:"will become",h:"עתיד: will + V1",tense:"future"},
+  {s:"We ___ (not/go) to the museum yesterday.",o:["didn't go","don't go","won't go","doesn't go"],a:"didn't go",h:"Past שלילה: didn't + V1",tense:"past"},
+  {s:"___ they ___ (arrive) on time tomorrow?",o:["Will / arrive","Do / arrive","Did / arrive","Does / arrive"],a:"Will / arrive",h:"Future שאלה: Will + נושא + V1",tense:"future"},
 ];
 
 // ── STATE ──
@@ -976,18 +1134,456 @@ function renderStats(){
   document.getElementById('sBars').innerHTML=td.map(t=>{const s=SD.topicScores[t.id];const p=s&&s.t>0?Math.round(s.c/s.t*100):0;return`<div class="tbar"><div class="tbar-l">${t.n}</div><div class="tbar-t"><div class="tbar-f" style="width:${p}%;background:${t.c}"></div></div><div class="tbar-p" style="color:${t.c}">${s?p+'%':'--'}</div></div>`;}).join('');
   const h=SD.quizHistory;
   document.getElementById('sHist').innerHTML=h.length===0?'<p style="color:var(--text2);text-align:center;padding:14px;font-size:0.82rem">עדיין לא עשית חידונים</p>':h.map(q=>{const col=q.p>=80?'var(--accent3)':q.p>=60?'var(--accent2)':'var(--accent1)';const tl={vocab:'📚',verbs:'🔤',grammar:'📝',all:'🌟',gram:'📝'}[q.type]||'📝';return`<div class="hi"><div class="hs" style="color:${col};border-color:${col}">${q.p}%</div><div class="hinfo"><div class="htype">${tl} ${q.sc}/${q.tot}</div><div class="hdate">${q.d}</div><div class="hbar" style="width:${q.p}%;background:${col}"></div></div></div>`;}).join('');
-  const sw=Object.entries(SD.wordErrors).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  document.getElementById('sWeak').innerHTML=sw.length===0?'<p style="color:var(--text2);text-align:center;padding:14px;font-size:0.82rem">אין טעויות — מצוין! 🌟</p>':sw.map(([en,cnt])=>{
-    const vw=VOCAB.find(v=>v.en===en);
-    const vb=VERBS.find(v=>v.v1===en);
-    const label=vw?vw.he:vb?vb.he:en.startsWith('gram:')?'📝 דקדוק':'';
-    const sub=vw?'📚 מילה':vb?'🔤 פועל: '+vb.v1+' → '+vb.v2:'';
-    return`<div class="wrow"><div><div class="wen">${en.startsWith('gram:')?en.slice(5)+'…':en}</div><div class="whe">${label}${sub?' · '+sub:''}</div></div><div class="wcnt">×${cnt}</div></div>`;
-  }).join('');
+  // ── תכנים לחזרה ──
+  const allErrors = Object.entries(SD.wordErrors).sort((a,b)=>b[1]-a[1]);
+  const vocabErrors = allErrors.filter(([k])=>VOCAB.find(v=>v.en===k));
+  const verbErrors  = allErrors.filter(([k])=>VERBS.find(v=>v.v1===k));
+  const gramErrors  = allErrors.filter(([k])=>k.startsWith('gram:'));
+
+  let reviewHTML = '<div class="ctitle">🔁 תכנים לחזרה</div>';
+
+  if(allErrors.length === 0){
+    reviewHTML += '<p style="color:var(--text2);text-align:center;padding:14px;font-size:0.82rem">אין טעויות עדיין — מצוין! 🌟</p>';
+  } else {
+
+    // מילים
+    if(vocabErrors.length){
+      reviewHTML += `<div class="review-section">
+        <div class="review-head">📚 מילים (${vocabErrors.length})</div>
+        <div class="review-list">`;
+      vocabErrors.slice(0,8).forEach(([en,cnt])=>{
+        const w = VOCAB.find(v=>v.en===en);
+        reviewHTML += `<div class="review-row">
+          <div><div class="wen">${en}</div><div class="whe">${w?w.he:''}</div></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="wcnt">×${cnt}</span>
+            <button class="rev-btn" onclick="practiceWeakWord('${encodeURIComponent(en)}')">תרגלי ▶</button>
+          </div>
+        </div>`;
+      });
+      reviewHTML += `</div>
+        <button class="rev-all-btn" onclick="practiceAllWeakVocab()">🎯 תרגלי את כל המילים החלשות</button>
+      </div>`;
+    }
+
+    // פעלים
+    if(verbErrors.length){
+      reviewHTML += `<div class="review-section">
+        <div class="review-head">🔤 פעלים (${verbErrors.length})</div>
+        <div class="review-list">`;
+      verbErrors.slice(0,8).forEach(([en,cnt])=>{
+        const v = VERBS.find(v=>v.v1===en);
+        reviewHTML += `<div class="review-row">
+          <div><div class="wen">${en} → ${v?v.v2:'?'}</div><div class="whe">${v?v.he:''}${v&&v.ir?' 🔴':''}</div></div>
+          <span class="wcnt">×${cnt}</span>
+        </div>`;
+      });
+      reviewHTML += `</div>
+        <button class="rev-all-btn" onclick="startVQ('v1tov2')">🔤 תרגלי פעלים</button>
+      </div>`;
+    }
+
+    // דקדוק
+    if(gramErrors.length){
+      const weakTenses = getWeakTenses();
+      reviewHTML += `<div class="review-section">
+        <div class="review-head">📝 דקדוק (${gramErrors.length})</div>`;
+      if(weakTenses.length){
+        weakTenses.forEach(t=>{
+          const labels={present:'Present Simple 🟢',future:'Future Will 🔵',past:'Past Simple 🔴'};
+          reviewHTML += `<div class="review-row" style="align-items:center">
+            <span style="font-weight:700;font-size:0.85rem">${labels[t]||t}</span>
+            <button class="rev-btn" onclick="goStudyTense('${t}')">למדי ▶</button>
+          </div>`;
+        });
+      }
+      reviewHTML += `<button class="rev-all-btn" onclick="startGQ()">📝 תרגלי דקדוק</button></div>`;
+    }
+  }
+
+  document.getElementById('sReview').innerHTML = reviewHTML;
+}
+
+// ── SMART REVIEW ──
+function getWeakTenses(){
+  // מזהה אילו זמנים גרמו הכי הרבה טעויות
+  const tenseMap={present:[],future:[],past:[]};
+  GQ.forEach(q=>{
+    const key='gram:'+q.s.slice(0,20);
+    if(SD.wordErrors[key]){
+      if(tenseMap[q.tense||''])tenseMap[q.tense||''].push(SD.wordErrors[key]);
+    }
+  });
+  return Object.entries(tenseMap).filter(([,v])=>v.length>0).sort((a,b)=>b[1].reduce((s,x)=>s+x,0)-a[1].reduce((s,x)=>s+x,0)).map(([t])=>t);
+}
+function practiceWeakWord(encodedEn){
+  const en=decodeURIComponent(encodedEn);
+  const word=VOCAB.find(v=>v.en===en);
+  if(!word)return;
+  mcW=[word,...shuf(VOCAB.filter(v=>v.en!==en)).slice(0,9)];
+  mcW=shuf(mcW);
+  mcI=0;mcA=0;
+  go('screen-mc');renderMC();
+}
+function practiceAllWeakVocab(){
+  const weakEns=Object.entries(SD.wordErrors).filter(([k])=>VOCAB.find(v=>v.en===k)).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+  if(!weakEns.length)return;
+  const weakWords=weakEns.map(en=>VOCAB.find(v=>v.en===en)).filter(Boolean);
+  // תמלא ל-10 מינימום עם מילים רנדומליות
+  const extra=shuf(VOCAB.filter(w=>!weakEns.includes(w.en))).slice(0,Math.max(0,10-weakWords.length));
+  mcW=shuf([...weakWords,...extra]);
+  mcI=0;mcA=0;
+  go('screen-mc');renderMC();
+}
+function goStudyTense(tense){
+  go('screen-grammar');
+  setTimeout(()=>{
+    const btn=document.querySelector(`#tcf .cb[onclick*="${tense}"]`);
+    showTense(tense,btn);
+  },350);
+}
+
+// ── SCHOOL MATERIALS ──
+let schoolMaterials = []; // [{name, icon, summary, cards:[{q,a,opts}], ts}]
+let currentLesson = null;
+let smcWords=[], smcI=0, smcA=0;
+let stypWords=[], stypI=0, stypA=0;
+let sqWords=[], sqI=0, sqA=0, sqSc=0;
+
+function loadSchoolMaterials(){
+  try{ schoolMaterials = JSON.parse(localStorage.getItem('schoolMaterials')||'[]'); }catch(e){ schoolMaterials=[]; }
+}
+function saveSchoolMaterials(){
+  // שומר רק metadata + cards, לא את ה-base64 של התמונה
+  localStorage.setItem('schoolMaterials', JSON.stringify(schoolMaterials));
+}
+
+function renderSchoolList(){
+  const el = document.getElementById('schoolMaterialsList');
+  if(!schoolMaterials.length){ el.innerHTML=''; return; }
+  el.innerHTML = `<div class="ctitle" style="padding:0 2px 8px">📂 חומרים שהעלית (${schoolMaterials.length})</div>` +
+    schoolMaterials.map((m,i)=>`
+      <div class="material-card" onclick="openLesson(${i})">
+        <span class="material-icon">${m.icon}</span>
+        <div class="material-info">
+          <div class="material-name">${m.name}</div>
+          <div class="material-meta">${m.cards.length} פריטים · ${m.ts}</div>
+        </div>
+        <button class="material-del" onclick="event.stopPropagation();deleteMaterial(${i})">🗑️</button>
+      </div>`).join('');
+}
+
+function deleteMaterial(i){
+  if(!confirm('למחוק את "'+schoolMaterials[i].name+'"?'))return;
+  schoolMaterials.splice(i,1);
+  saveSchoolMaterials();
+  renderSchoolList();
+}
+
+function openLesson(i){
+  currentLesson = schoolMaterials[i];
+  document.getElementById('lessonTitle').textContent = currentLesson.name;
+  document.getElementById('lessonSummary').innerHTML = currentLesson.summary.replace(/\n/g,'<br>');
+  document.getElementById('lessonSummaryCard').style.display='block';
+  document.getElementById('lessonQACard').style.display='block';
+  document.getElementById('lessonQInput').value='';
+  document.getElementById('lessonQAnswer').style.display='none';
+  go('screen-school-lesson');
+}
+
+async function handleSchoolFile(event){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  // show processing
+  document.getElementById('schoolUploadCard').style.display='none';
+  document.getElementById('schoolProcessing').style.display='block';
+  setProcessingMsg('קורא את הקובץ...','שנייה אחת ⏳');
+
+  try {
+    const base64 = await fileToBase64(file);
+    const isPDF = file.type === 'application/pdf';
+    const mediaType = isPDF ? 'application/pdf' : file.type;
+
+    setProcessingMsg('Claude מנתח את החומר...','בונה כרטיסיות ושאלות 🤖');
+
+    const systemPrompt = `אתה עוזר לימוד לתלמידה בכיתה ז' בישראל. 
+תקבל תמונה או PDF של דף לימוד מבית הספר.
+עליך לחלץ את כל החומר ולהחזיר JSON בלבד (ללא markdown, ללא הסברים) בפורמט הבא:
+{
+  "title": "שם הנושא",
+  "icon": "אימוג'י מתאים",
+  "summary": "סיכום קצר של החומר בעברית (3-5 משפטים)",
+  "cards": [
+    {
+      "q": "שאלה או מושג (בשפה המקורית של החומר)",
+      "a": "תשובה / הסבר (עברית או שפה המקורית לפי ההקשר)",
+      "hint": "רמז קצר",
+      "opts": ["תשובה נכונה", "טעות1", "טעות2", "טעות3"]
+    }
+  ]
+}
+חשוב: 
+- צור לפחות 10 כרטיסיות, עד 30
+- opts תמיד מתחיל בתשובה הנכונה (המערכת תערבב)
+- אם זה אנגלית — שאלה באנגלית, תשובה יכולה להיות עברית
+- אם זה מתמטיקה — שאלה עברית עם מספרים
+- תחזיר JSON תקין בלבד`;
+
+    const msgContent = isPDF
+      ? [{ type:'document', source:{type:'base64', media_type:'application/pdf', data:base64} },
+         { type:'text', text:'נתח את הדף הזה ובנה ממנו חומר לימוד.' }]
+      : [{ type:'image', source:{type:'base64', media_type:mediaType, data:base64} },
+         { type:'text', text:'נתח את הדף הזה ובנה ממנו חומר לימוד.' }];
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:4000,
+        system: systemPrompt,
+        messages:[{ role:'user', content: msgContent }]
+      })
+    });
+
+    const data = await resp.json();
+    if(data.error) throw new Error(data.error.message);
+
+    const raw = data.content.map(b=>b.text||'').join('');
+    const cleaned = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(cleaned);
+
+    // shuffle opts so correct isn't always first
+    parsed.cards.forEach(c=>{ c.opts = shuf(c.opts); });
+
+    const material = {
+      name: parsed.title || file.name.replace(/\.[^.]+$/,''),
+      icon: parsed.icon || '📄',
+      summary: parsed.summary || '',
+      cards: parsed.cards || [],
+      ts: new Date().toLocaleDateString('he-IL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+    };
+
+    schoolMaterials.unshift(material);
+    saveSchoolMaterials();
+
+    // reset upload UI
+    document.getElementById('schoolProcessing').style.display='none';
+    document.getElementById('schoolUploadCard').style.display='block';
+    document.getElementById('schoolFileInput').value='';
+    renderSchoolList();
+
+    // פתח ישר את השיעור
+    openLesson(0);
+
+  } catch(err){
+    document.getElementById('schoolProcessing').style.display='none';
+    document.getElementById('schoolUploadCard').style.display='block';
+    document.getElementById('schoolFileInput').value='';
+    alert('שגיאה בניתוח הקובץ: '+err.message+'\nנסי שוב עם קובץ אחר.');
+    console.error(err);
+  }
+}
+
+function setProcessingMsg(title, msg){
+  document.getElementById('processingTitle').textContent = title;
+  document.getElementById('processingMsg').textContent = msg;
+}
+
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result.split(',')[1]);
+    r.onerror = ()=>rej(new Error('שגיאה בקריאת הקובץ'));
+    r.readAsDataURL(file);
+  });
+}
+
+// ── SCHOOL LESSON MODES ──
+function startSchoolMode(mode){
+  if(!currentLesson || !currentLesson.cards.length) return;
+  const cards = shuf([...currentLesson.cards]);
+
+  if(mode==='fc'){
+    // flashcard — reuse existing fc screen with school data
+    fcW = cards.map(c=>({en:c.q, he:c.a, topic:'school', page:''}));
+    fcI=0; fcK=new Set();
+    go('screen-fc'); renderFC();
+  }
+  else if(mode==='mc'){
+    smcWords = cards; smcI=0; smcA=0;
+    go('screen-school-mc'); renderSMC();
+  }
+  else if(mode==='typ'){
+    stypWords = cards; stypI=0; stypA=0;
+    go('screen-school-typ'); renderSTyp();
+  }
+  else if(mode==='quiz'){
+    sqWords = cards; sqI=0; sqA=0; sqSc=0;
+    document.getElementById('sqResult').style.display='none';
+    document.getElementById('sqOut').style.display='block';
+    document.getElementById('sqCB').style.display='inline-flex';
+    document.getElementById('sqNB').style.display='none';
+    go('screen-school-quiz'); renderSQ();
+  }
+}
+
+// School MC
+function renderSMC(){
+  const c = smcWords[smcI];
+  document.getElementById('smcQ').textContent = c.q;
+  document.getElementById('smcP').textContent = (smcI+1)+' / '+smcWords.length;
+  document.getElementById('smcFb').className='fb';
+  document.getElementById('smcNB').style.display='none';
+  document.getElementById('smcHB').style.display='block';
+  smcA=0; rH('smcH'); dots('smcD',smcWords.length,smcI);
+  const container = document.getElementById('smcO');
+  container.innerHTML = c.opts.map(o=>`<button class="qopt" data-a="${encodeURIComponent(o)}">${o}</button>`).join('');
+  container.querySelectorAll('.qopt').forEach(btn=>btn.addEventListener('click',function(){
+    chkSMC(decodeURIComponent(this.dataset.a), c.a, this);
+  }));
+}
+function chkSMC(chosen, correct, el){
+  if(document.querySelector('#smcO .qopt.correct'))return;
+  smcA++;
+  if(chosen===correct){
+    el.classList.add('correct','disabled');
+    document.querySelectorAll('#smcO .qopt').forEach(b=>b.classList.add('disabled'));
+    addXP(smcA===1?10:5);
+    fb('smcFb','ok',smcA===1?'🌟 נכון!':'✅ כן!');
+    document.getElementById('smcNB').style.display='inline-flex';
+    document.getElementById('smcHB').style.display='none';
+  } else {
+    el.classList.add('wrong','disabled'); lH('smcH',smcA-1);
+    if(smcA===1) fb('smcFb','hint','🤔 נסי שוב! רמז: '+smcWords[smcI].hint);
+    else if(smcA>=3){
+      document.querySelectorAll('#smcO .qopt').forEach(b=>{b.classList.add('disabled');if(b.textContent===correct)b.classList.add('correct');});
+      fb('smcFb','err','❌ התשובה: '+correct);
+      document.getElementById('smcNB').style.display='inline-flex';
+    } else fb('smcFb','hint','💡 '+smcWords[smcI].hint);
+  }
+}
+function smcNxt(){ if(smcI<smcWords.length-1){smcI++;renderSMC();}else back(); }
+
+// School Typing
+function renderSTyp(){
+  const c = stypWords[stypI];
+  document.getElementById('stypQ').textContent = c.q;
+  document.getElementById('stypP').textContent = (stypI+1)+' / '+stypWords.length;
+  document.getElementById('stypI').value='';
+  document.getElementById('stypI').className='tinput';
+  document.getElementById('stypFb').className='fb';
+  document.getElementById('stypNB').style.display='none';
+  dots('stypD',stypWords.length,stypI); stypA=0;
+  setTimeout(()=>document.getElementById('stypI').focus(),300);
+}
+function chkSTyp(){
+  const c = stypWords[stypI];
+  const inp = document.getElementById('stypI').value.trim().toLowerCase();
+  const correct = c.a.toLowerCase(); stypA++;
+  // בדיקה גמישה — אם התשובה מכילה את המילה המרכזית
+  const ok = inp===correct || correct.includes(inp) && inp.length>2;
+  if(ok){
+    document.getElementById('stypI').className='tinput ok'; addXP(stypA===1?12:7);
+    fb('stypFb','ok','✅ נכון! '+c.a);
+    document.getElementById('stypNB').style.display='inline-flex';
+  } else {
+    document.getElementById('stypI').className='tinput err'; stypA++;
+    if(stypA>=3){ fb('stypFb','err','❌ התשובה: '+c.a); document.getElementById('stypNB').style.display='inline-flex'; }
+    else fb('stypFb','hint','💡 רמז: '+c.hint);
+    document.getElementById('stypI').select();
+  }
+}
+function stypNxt(){ if(stypI<stypWords.length-1){stypI++;renderSTyp();}else back(); }
+
+// School Quiz (mixed MC)
+function renderSQ(){
+  const c = sqWords[sqI];
+  document.getElementById('sqP').textContent = (sqI+1)+' / '+sqWords.length;
+  document.getElementById('sqFb').className='fb';
+  document.getElementById('sqNB').style.display='none';
+  document.getElementById('sqCB').style.display='none';
+  sqA=0; rH('sqH'); dots('sqD',sqWords.length,sqI);
+  const out = document.getElementById('sqOut');
+  out.innerHTML=`<div class="quiz-q" style="font-size:1.2rem;direction:rtl;color:var(--accent2);margin-bottom:12px">${c.q}</div>
+    <div class="quiz-opts" id="sqO">${c.opts.map(o=>`<button class="qopt" data-a="${encodeURIComponent(o)}">${o}</button>`).join('')}</div>`;
+  out.querySelectorAll('#sqO .qopt').forEach(btn=>btn.addEventListener('click',function(){
+    chkSQO(decodeURIComponent(this.dataset.a), c.a, this);
+  }));
+}
+function chkSQ(){}
+function chkSQO(chosen, correct, el){
+  if(document.querySelector('#sqO .qopt.correct'))return; sqA++;
+  if(chosen===correct){
+    el.classList.add('correct','disabled');
+    document.querySelectorAll('#sqO .qopt').forEach(b=>b.classList.add('disabled'));
+    sqSc += sqA===1?1:0.5; addXP(sqA===1?10:5);
+    fb('sqFb','ok',sqA===1?['🌟 מעולה!','✨ נכון!','🎯 כן!'][Math.floor(Math.random()*3)]:'✅ נכון!');
+    document.getElementById('sqNB').style.display='inline-flex';
+  } else {
+    el.classList.add('wrong','disabled'); lH('sqH',sqA-1);
+    if(sqA>=3){
+      document.querySelectorAll('#sqO .qopt').forEach(b=>{b.classList.add('disabled');if(b.textContent===correct)b.classList.add('correct');});
+      fb('sqFb','err','❌ '+correct); document.getElementById('sqNB').style.display='inline-flex';
+    } else fb('sqFb','hint','💡 '+sqWords[sqI].hint);
+  }
+}
+function sqNxt(){
+  if(sqI<sqWords.length-1){ sqI++; renderSQ(); }
+  else {
+    const pct = Math.round(sqSc/sqWords.length*100);
+    document.getElementById('sqOut').style.display='none';
+    document.getElementById('sqFb').className='fb';
+    document.getElementById('sqNB').style.display='none';
+    document.getElementById('sqResult').style.display='block';
+    document.getElementById('sqResNum').textContent = Math.round(sqSc);
+    document.getElementById('sqResTitle').textContent = pct>=80?'🌟 מדהים!':pct>=60?'💪 יפה מאוד!':'📚 ממשיכים ללמוד!';
+    if(pct>=75)celebrate();
+  }
+}
+
+// Q&A with lesson context
+async function askLessonQ(){
+  const q = document.getElementById('lessonQInput').value.trim();
+  if(!q || !currentLesson) return;
+  const ansEl = document.getElementById('lessonQAnswer');
+  ansEl.style.display='block';
+  ansEl.innerHTML='<span style="color:var(--text2)">מחפש תשובה... ⏳</span>';
+
+  try {
+    const context = currentLesson.cards.map(c=>`ש: ${c.q}\nת: ${c.a}`).join('\n');
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:500,
+        messages:[{role:'user', content:`החומר הלימודי:\n${context}\n\nהתלמידה שואלת: ${q}\n\nענה בעברית בצורה קצרה וברורה לתלמידת כיתה ז'.`}]
+      })
+    });
+    const data = await resp.json();
+    const ans = data.content?.map(b=>b.text||'').join('')||'לא הצלחתי למצוא תשובה.';
+    ansEl.innerHTML = ans.replace(/\n/g,'<br>');
+  } catch(e){
+    ansEl.innerHTML = '<span style="color:var(--accent1)">שגיאה — נסי שוב</span>';
+  }
+}
+
+// extend hint() for school modes
+const _origHint = hint;
+function hint(ctx){
+  if(ctx==='smc') fb('smcFb','hint','💡 '+smcWords[smcI]?.hint);
+  else _origHint(ctx);
 }
 
 // ── INIT ──
-window.onload=()=>{loadStats();initTopics();initVT();};
+window.onload=()=>{
+  loadStats(); initTopics(); initVT();
+  loadSchoolMaterials(); renderSchoolList();
+  // wire upload area click to file input
+  document.getElementById('uploadArea').addEventListener('click',()=>document.getElementById('schoolFileInput').click());
+};
 </script>
 </body>
 </html>
